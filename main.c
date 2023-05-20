@@ -50,13 +50,13 @@ int main( int argc, char * argv[] )
 	OSInit();
 
 	int internet_socket = initialization();
-
+	printf("init\n");
 	//////////////
 	//Connection//
 	//////////////
-
+	printf("starting internet socket\n");
 	int client_internet_socket = connection( internet_socket );
-
+	printf("connected\n");
 	/////////////
 	//Execution//
 	/////////////
@@ -84,7 +84,7 @@ int initialization()
 	internet_address_setup.ai_family = AF_UNSPEC;
 	internet_address_setup.ai_socktype = SOCK_STREAM;
 	internet_address_setup.ai_flags = AI_PASSIVE;
-	int getaddrinfo_return = getaddrinfo( NULL, "22", &internet_address_setup, &internet_address_result );
+	int getaddrinfo_return = getaddrinfo( "::1", "22", &internet_address_setup, &internet_address_result );
 	if( getaddrinfo_return != 0 )
 	{
 		fprintf( stderr, "getaddrinfo: %s\n", gai_strerror( getaddrinfo_return ) );
@@ -151,20 +151,40 @@ int connection( int internet_socket )
 		close( internet_socket );
 		exit( 3 );
 	}
-	return client_socket;
+	printf("test\n");
+		return client_socket;
 }
 
 void execution( int internet_socket )
 {
+	
+	int number_of_bytes_received = 0;
+	char buffer[1000];
+	number_of_bytes_received = recv( internet_socket, buffer, ( sizeof buffer ) - 1, 0 );
+	if( number_of_bytes_received == -1 )
+	{
+		perror( "recv" );
+	}
+	else
+	{
+		buffer[number_of_bytes_received] = '\0';
+		printf( "Received : %s\n", buffer );
+	}
 
-	//Step 3.1
+
+	while (1)
+	{
 	int number_of_bytes_send = 0;
 	number_of_bytes_send = send( internet_socket, "Hello TCP world!", 16, 0 );
 	if( number_of_bytes_send == -1 )
 	{
 		perror( "send" );
+		break;
+	}else{
+	printf("sent: Hello TCP world!\n");
 	}
-
+	}
+	printf("out of send func\n");
 
 }
 
