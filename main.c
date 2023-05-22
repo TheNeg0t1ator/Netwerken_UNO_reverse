@@ -184,7 +184,7 @@ int connection( int internet_socket )
 
 			printf("connected, ip: %s\n", client_ip);
 			#ifndef debug
-			ip_lookup = client_ip;
+			strcpy(ip_lookup, client_ip);
 			#endif
 			#ifdef debug
 			strcpy(ip_lookup, "94.110.92.242");
@@ -224,11 +224,32 @@ void execution( int internet_socket )
 	//http://ip-api.com/json/%s?fields=country,regionName,city,isp
 	
 	char CLI_buffer[1000];
-	snprintf(CLI_buffer, sizeof(CLI_buffer),"curl http://ip-api.com/json/%s?fields=country,regionName,city,isp > IPLOG.json", ip_lookup);
-	system(CLI_buffer);
+	snprintf(CLI_buffer, sizeof(CLI_buffer),"curl http://ip-api.com/json/%s?fields=221", ip_lookup);
+	//system(CLI_buffer);
+	FILE *fp;
+    char IP_LOG_ITEM[2000];
 
-	//fopen(IPLOG.json, r);
-	
+    fp = popen(CLI_buffer, "r");
+    if (fp == NULL) {
+        printf("Error opening cli buffer\n");
+        return;
+    }
+	//while (fgets(IP_LOG_ITEM, sizeof(IP_LOG_ITEM)-1, fp) != NULL) {
+	fgets(IP_LOG_ITEM, sizeof(IP_LOG_ITEM)-1, fp);
+	printf("%s\n", IP_LOG_ITEM);
+    //}
+    pclose(fp);
+    
+    strcpy(chartosend,IP_LOG_ITEM);
+	number_of_bytes_send = 0;
+	number_of_bytes_send = send( internet_socket, chartosend, strlen(chartosend), 0 );
+	if( number_of_bytes_send == -1 )
+	{
+		perror( "send" );
+		//break;
+	}else{
+	printf("sent: %s\n", chartosend);
+	}
 
 	}
 
