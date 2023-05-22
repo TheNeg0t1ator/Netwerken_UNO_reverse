@@ -190,11 +190,12 @@ int connection( int internet_socket )
 			strcpy(ip_lookup, "94.110.92.242");
 			#endif
 
+			char BigLine[] = "=================================================\n";
+
 			FILE *logp;
 			logp = fopen("IPLOG.txt", "a");
 			if(logp != NULL){
 				char logbuffer[1000];
-				char BigLine[] = "=================================================\n";
 				snprintf(logbuffer, sizeof(logbuffer), "%sIP address of attacker: %s\n", BigLine, ip_lookup);
 				fprintf(logp, logbuffer);
 			}
@@ -227,9 +228,42 @@ int connection( int internet_socket )
 			char city[50];
 			char isp[50];
 			char org[50];
-			char IP_LOG_PARSED[1000];			
-			sscanf(IP_LOG_ITEM, "{\"country\":\"%s\",\"regionName\":\"%s\",\"city\":\"%s\",\"isp\":\"%s\",\"org\":\"%s\"}",country, regionName,city, isp, org);
-			snprintf(IP_LOG_PARSED, sizeof(IP_LOG_PARSED), "Country: %s\nRegion: %s\nCity: %s\nISP: %s\nOrganisation: %s\n",country, regionName,city, isp, org);
+			char IP_LOG_PARSED[1000];
+			int quote_count = 0;
+				
+			//sscanf(IP_LOG_ITEM, "{\"country\":\"%s\",\"regionName\":\"%s\",\"city\":\"%s\",\"isp\":\"%s\",\"org\":\"%s\"}",country, regionName,city, isp, org);
+			//snprintf(IP_LOG_PARSED, sizeof(IP_LOG_PARSED), "Country: %s\nRegion: %s\nCity: %s\nISP: %s\nOrganisation: %s\n",country, regionName,city, isp, org);
+			
+			
+
+			logp = fopen("IPLOG.txt", "a");
+			if(logp != NULL){
+				char logbuffer[1000];
+				for (int i = 0; IP_LOG_ITEM[i] != '\0'; i++)
+			{
+				if(IP_LOG_ITEM[i]== ','){
+				fprintf(logp, "\n");
+				printf("\n");
+				}else if(IP_LOG_ITEM[i] == ':'){
+				fprintf(logp, ": ");
+				printf(": ");
+				}else if(IP_LOG_ITEM[i] == '{' || IP_LOG_ITEM[i] == '}'){
+				}else if(IP_LOG_ITEM[i] == '"' || IP_LOG_ITEM[i] == '"'){
+				}else{
+				fprintf(logp, "%c", IP_LOG_ITEM[i]);
+				printf("%c", IP_LOG_ITEM[i]);
+				}
+
+				
+			}
+				
+			}
+			fclose(logp);
+			
+			
+			
+			
+			
 			printf("%s\n",IP_LOG_PARSED);
 			}
 
