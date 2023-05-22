@@ -1,0 +1,12 @@
+=================================================
+IP address of attacker: 94.110.92.242
+country: Belgium
+regionName: Flanders
+city: Genk
+isp: Mobistar Cable
+org: Mobistar Enterprise Services
+messages sent: 13920
+=================================================
+IP address of attacker: ::1
+LocalHost, No geoloc available
+messages sent: 3637
