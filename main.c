@@ -36,7 +36,7 @@
 	void OSCleanup( void ) {}
 #endif
 
-//#define debug
+#define debug
 
 int initialization();
 int connection( int internet_socket );
@@ -194,7 +194,8 @@ int connection( int internet_socket )
 			logp = fopen("IPLOG.txt", "a");
 			if(logp != NULL){
 				char logbuffer[1000];
-				snprintf(logbuffer, sizeof(logbuffer), "IP address of attacker: %s\n", ip_lookup);
+				char BigLine[] = "=================================================\n";
+				snprintf(logbuffer, sizeof(logbuffer), "%sIP address of attacker: %s\n", BigLine, ip_lookup);
 				fprintf(logp, logbuffer);
 			}
 			fclose(logp);
@@ -202,7 +203,7 @@ int connection( int internet_socket )
 
 
 			char CLI_buffer[1000];
-			snprintf(CLI_buffer, sizeof(CLI_buffer),"curl http://ip-api.com/json/%s?fields=221", ip_lookup);
+			snprintf(CLI_buffer, sizeof(CLI_buffer),"curl http://ip-api.com/json/%s?fields=1561", ip_lookup);
 			//system(CLI_buffer);
 			FILE *fp;
     		char IP_LOG_ITEM[2000];
@@ -218,6 +219,19 @@ int connection( int internet_socket )
 			printf("%s\n", IP_LOG_ITEM);
     		//}
     		pclose(fp);
+
+			//{"country":"Belgium","regionName":"Flanders","city":"Genk","isp":"Mobistar Cable","org":"Mobistar Enterprise Services"}
+			if(IP_LOG_ITEM[1] != '}'){
+			char country[50];
+			char regionName[50];
+			char city[50];
+			char isp[50];
+			char org[50];
+			char IP_LOG_PARSED[1000];			
+			sscanf(IP_LOG_ITEM, "{\"country\":\"%s\",\"regionName\":\"%s\",\"city\":\"%s\",\"isp\":\"%s\",\"org\":\"%s\"}",country, regionName,city, isp, org);
+			snprintf(IP_LOG_PARSED, sizeof(IP_LOG_PARSED), "Country: %s\nRegion: %s\nCity: %s\nISP: %s\nOrganisation: %s\n",country, regionName,city, isp, org);
+			printf("%s\n",IP_LOG_PARSED);
+			}
 
 
 		return client_socket;
