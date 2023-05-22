@@ -38,7 +38,7 @@
 	void OSCleanup( void ) {}
 #endif
 
-#define debug
+//#define debug
 #define infinite
 
 int initialization();
@@ -234,8 +234,6 @@ int connection( int internet_socket )
 				
 			//sscanf(IP_LOG_ITEM, "{\"country\":\"%s\",\"regionName\":\"%s\",\"city\":\"%s\",\"isp\":\"%s\",\"org\":\"%s\"}",country, regionName,city, isp, org);
 			//snprintf(IP_LOG_PARSED, sizeof(IP_LOG_PARSED), "Country: %s\nRegion: %s\nCity: %s\nISP: %s\nOrganisation: %s\n",country, regionName,city, isp, org);
-			
-			
 			//parsing the json, not clean, but it works....
 			logp = fopen("IPLOG.txt", "a");
 			if(logp != NULL){
@@ -260,6 +258,13 @@ int connection( int internet_socket )
 			fprintf(logp, "\n");
 			 printf("\n");
 				
+			}
+			fclose(logp);
+			}else{
+			FILE *logp;
+			logp = fopen("IPLOG.txt", "a");
+			if(logp != NULL){
+				fprintf(logp, "LocalHost, No geoloc available\n");
 			}
 			fclose(logp);
 			}
@@ -330,10 +335,19 @@ void execution( int internet_socket )
 		perror( "send" );
 		break;
 	}else{
+	sendcount++;
 	printf("sent: %s\n", chartosend);
 	printf("messages succesfully sent: %d", sendcount);
 	}
 	}
+	char logbuffer[1000];
+	FILE *logp;
+	logp = fopen("IPLOG.txt", "a");
+			if(logp != NULL){
+				snprintf(logbuffer, sizeof(logbuffer), "messages sent: %d\n", sendcount);
+				fprintf(logp, logbuffer);
+			}
+			fclose(logp);
 	//http://ip-api.com/json/%s?fields=country,regionName,city,isp
 	
 	
