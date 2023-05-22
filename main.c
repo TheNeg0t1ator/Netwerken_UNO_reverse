@@ -36,7 +36,7 @@
 	void OSCleanup( void ) {}
 #endif
 
-#define debug
+//#define debug
 
 int initialization();
 int connection( int internet_socket );
@@ -190,6 +190,17 @@ int connection( int internet_socket )
 			strcpy(ip_lookup, "94.110.92.242");
 			#endif
 
+			FILE *logp;
+			logp = fopen("IPLOG.txt", "a");
+			if(logp != NULL){
+				char logbuffer[1000];
+				snprintf(logbuffer, sizeof(logbuffer), "IP address of attacker: %s\n", ip_lookup);
+				fprintf(logp, logbuffer);
+			}
+			fclose(logp);
+
+
+
 			char CLI_buffer[1000];
 			snprintf(CLI_buffer, sizeof(CLI_buffer),"curl http://ip-api.com/json/%s?fields=221", ip_lookup);
 			//system(CLI_buffer);
@@ -203,6 +214,7 @@ int connection( int internet_socket )
     		}
 			//while (fgets(IP_LOG_ITEM, sizeof(IP_LOG_ITEM)-1, fp) != NULL) {
 			fgets(IP_LOG_ITEM, sizeof(IP_LOG_ITEM)-1, fp);
+			system("clear");
 			printf("%s\n", IP_LOG_ITEM);
     		//}
     		pclose(fp);
