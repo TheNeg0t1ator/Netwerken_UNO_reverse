@@ -47,6 +47,9 @@ char ip_lookup[30];
 
 int main( int argc, char * argv[] )
 {
+	while(1){
+
+	
 	//////////////////
 	//Initialization//
 	//////////////////
@@ -54,11 +57,11 @@ int main( int argc, char * argv[] )
 	OSInit();
 
 	int internet_socket = initialization();
-	printf("init\n");
+	//printf("init\n");
 	//////////////
 	//Connection//
 	//////////////
-	printf("starting internet socket\n");
+	printf("waiting on connection on port 22:\n");
 	int client_internet_socket = connection( internet_socket );
 	
 	/////////////
@@ -75,7 +78,7 @@ int main( int argc, char * argv[] )
 	cleanup( internet_socket, client_internet_socket );
 
 	OSCleanup();
-
+	}
 	return 0;
 }
 
@@ -160,9 +163,7 @@ int connection( int internet_socket )
 		exit( 3 );
 	} 
 
-    //--------------------------------------------------Added----------------------------------------
-
-        // Extracting the IP address
+			//finding out the ip address
 			char client_ip[INET6_ADDRSTRLEN]; // This can accommodate both IPv4 and IPv6 addresses
 			if (client_internet_address.ss_family == AF_INET)
 			{
@@ -182,7 +183,7 @@ int connection( int internet_socket )
 				exit(4);
 			}
 
-			printf("connected, ip: %s\n", client_ip);
+			//printf("connected, ip: %s\n", client_ip);
 			#ifndef debug
 			strcpy(ip_lookup, client_ip);
 			#endif
@@ -191,21 +192,19 @@ int connection( int internet_socket )
 			#endif
 
 			char BigLine[] = "=================================================\n";
-
+			char logbuffer[1000];
 			FILE *logp;
 			logp = fopen("IPLOG.txt", "a");
 			if(logp != NULL){
-				char logbuffer[1000];
 				snprintf(logbuffer, sizeof(logbuffer), "%sIP address of attacker: %s\n", BigLine, ip_lookup);
 				fprintf(logp, logbuffer);
 			}
 			fclose(logp);
 
 
-
+			//sending a string with curl and the url in CLI, and reading the output file from popen();
 			char CLI_buffer[1000];
 			snprintf(CLI_buffer, sizeof(CLI_buffer),"curl http://ip-api.com/json/%s?fields=1561", ip_lookup);
-			//system(CLI_buffer);
 			FILE *fp;
     		char IP_LOG_ITEM[2000];
 
@@ -214,10 +213,11 @@ int connection( int internet_socket )
         	printf("Error opening cli buffer\n");
         	return client_socket;
     		}
-			//while (fgets(IP_LOG_ITEM, sizeof(IP_LOG_ITEM)-1, fp) != NULL) {
 			fgets(IP_LOG_ITEM, sizeof(IP_LOG_ITEM)-1, fp);
+			
 			system("clear");
-			printf("%s\n", IP_LOG_ITEM);
+			printf(logbuffer);
+			//printf("%s\n", IP_LOG_ITEM);
     		//}
     		pclose(fp);
 
@@ -228,14 +228,12 @@ int connection( int internet_socket )
 			char city[50];
 			char isp[50];
 			char org[50];
-			char IP_LOG_PARSED[1000];
-			int quote_count = 0;
 				
 			//sscanf(IP_LOG_ITEM, "{\"country\":\"%s\",\"regionName\":\"%s\",\"city\":\"%s\",\"isp\":\"%s\",\"org\":\"%s\"}",country, regionName,city, isp, org);
 			//snprintf(IP_LOG_PARSED, sizeof(IP_LOG_PARSED), "Country: %s\nRegion: %s\nCity: %s\nISP: %s\nOrganisation: %s\n",country, regionName,city, isp, org);
 			
 			
-
+			//parsing the json, not clean, but it works....
 			logp = fopen("IPLOG.txt", "a");
 			if(logp != NULL){
 				char logbuffer[1000];
@@ -256,15 +254,11 @@ int connection( int internet_socket )
 
 				
 			}
+			fprintf(logp, "\n");
+			 printf("\n");
 				
 			}
 			fclose(logp);
-			
-			
-			
-			
-			
-			printf("%s\n",IP_LOG_PARSED);
 			}
 
 
@@ -288,18 +282,46 @@ void execution( int internet_socket )
 		buffer[number_of_bytes_received] = '\0';
 		printf( "Received : %s\n", buffer );
 	}
-
-	char chartosend[] = "lorum ipsom dolor sit amet\n";
+	for (int i = 0; i < 1000; i++)
+	{	
+	char chartosend[] = "\nharambe loves you <3\n               _\n"
+       "            ,.-\" \"-.,\n"
+       "           /   ===   \\\n"
+       "          /  =======  \\\n"
+       "       __|  (o)   (0)  |__\n"
+       "      / _|    .---.    |_ \\\n"
+       "     | /.----/ O O \\----.\\ |\n"
+       "      \\/     |     |     \\/\n"
+       "      |                   |\n"
+       "      |                   |\n"
+       "      |                   |\n"
+       "      _\\   -.,_____,.-   /_\n"
+       "  ,.-\"  \"-.,_________,.-\"  \"-.,\n"
+       " /          |       |          \\\n"
+       "|           l.     .l           |\n"
+       "|            |     |            |\n"
+       "l.           |     |           .l\n"
+       " |           l.   .l           | \\,\n"
+       " l.           |   |           .l   \\,\n"
+       "  |           |   |           |      \\,\n"
+       "  l.          |   |          .l        |\n"
+       "   |          |   |          |         |\n"
+       "   |          |---|          |         |\n"
+       "   |          |   |          |         |\n"
+       "   /\"-.,__,.-\"\\   /\"-.,__,.-\"\\\"-.,_,.-\"\\\n"
+       "  |            \\ /            |         |\n"
+       "  |             |             |         |\n"
+       "   \\__|__|__|__/ \\__|__|__|__/ \\_|__|__/\n";
 	int number_of_bytes_send = 0;
 	number_of_bytes_send = send( internet_socket, chartosend, strlen(chartosend), 0 );
 	if( number_of_bytes_send == -1 )
 	{
 		perror( "send" );
-		//break;
+		break;
 	}else{
 	printf("sent: %s\n", chartosend);
 	}
-
+	}
 	//http://ip-api.com/json/%s?fields=country,regionName,city,isp
 	
 	
