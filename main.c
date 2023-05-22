@@ -6,6 +6,7 @@
 	#include <unistd.h> //for close
 	#include <stdlib.h> //for exit
 	#include <string.h> //for memset
+	#include <stdint.h>
 	void OSInit( void )
 	{
 		WSADATA wsaData;
@@ -32,11 +33,13 @@
 	#include <unistd.h> //for close
 	#include <stdlib.h> //for exit
 	#include <string.h> //for memset
+	#include <stdint.h>
 	void OSInit( void ) {}
 	void OSCleanup( void ) {}
 #endif
 
 #define debug
+#define infinite
 
 int initialization();
 int connection( int internet_socket );
@@ -282,13 +285,21 @@ void execution( int internet_socket )
 		buffer[number_of_bytes_received] = '\0';
 		printf( "Received : %s\n", buffer );
 	}
+	int sendcount=0;
+	#ifdef infinite
+	while(1)
+	{	
+	
+	#else
 	for (int i = 0; i < 1000; i++)
 	{	
-	char chartosend[] = "\nharambe loves you <3\n               _\n"
+	#endif
+
+	char chartosend[] = "\nharambe loves you <3\n                _\n"
        "            ,.-\" \"-.,\n"
        "           /   ===   \\\n"
        "          /  =======  \\\n"
-       "       __|  (o)   (0)  |__\n"
+       "       __|  (0)   (0)  |__\n"
        "      / _|    .---.    |_ \\\n"
        "     | /.----/ O O \\----.\\ |\n"
        "      \\/     |     |     \\/\n"
@@ -320,6 +331,7 @@ void execution( int internet_socket )
 		break;
 	}else{
 	printf("sent: %s\n", chartosend);
+	printf("messages succesfully sent: %d", sendcount);
 	}
 	}
 	//http://ip-api.com/json/%s?fields=country,regionName,city,isp
